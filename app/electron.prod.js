@@ -8,6 +8,7 @@ const menu = require('./menu');
 
 const server = require('./server');
 let win;
+require('update-electron-app')();
 
 const createWindow = () => {
     // set timeout to render the window not until the Angular 

@@ -250,7 +250,6 @@ export class AppComponent {
         if (!process.enabled || !level.enabled){
           return;
         }
-        console.log(msg);
 
         if (this.regexInclude && this.regexes.length){
           let isOk = false;

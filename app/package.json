@@ -1,13 +1,17 @@
 {
     "name": "omnilog",
     "productName": "OmniLog",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "description": "Log reciever",
     "main": "electron.prod.js",
     "license": "MIT",
+    "repository": {
+        "url": "https://github.com/jontemalm/omnilog"
+    },
     "dependencies": {
         "electron-preferences": "^2.5.0",
         "fast-xml-parser": "^4.0.0-beta.8",
+        "update-electron-app": "^2.0.1",
         "ws": "^8.4.0"
     }
 }

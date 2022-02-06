@@ -1,6 +1,6 @@
 {
   "name": "omnilog",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "author": "Jonas Malm",
   "displayName": "OmniLog",
   "main": "./src/electron.prod.js",
@@ -39,6 +39,7 @@
     "os": "^0.1.2",
     "path": "^0.12.7",
     "rxjs": "~6.6.0",
+    "update-electron-app": "^2.0.1",
     "ws": "^8.4.0",
     "zone.js": "~0.11.3"
   },

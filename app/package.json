@@ -1,0 +1,13 @@
+{
+    "name": "omnilog",
+    "productName": "OmniLog",
+    "version": "1.0.5",
+    "description": "Log reciever",
+    "main": "electron.prod.js",
+    "license": "MIT",
+    "dependencies": {
+        "electron-preferences": "^2.5.0",
+        "fast-xml-parser": "^4.0.0-beta.8",
+        "ws": "^8.4.0"
+    }
+}

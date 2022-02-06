@@ -1,0 +1,139 @@
+{
+    "server": {
+        "listeningport": "9999",
+        "ip": "10.254.4.26"
+    },
+    "log.levels": [
+        {
+            "name": "DEBUG",
+            "enabled": true,
+            "color": "#ffffe0"
+        },
+        {
+            "name": "TRACE",
+            "enabled": true,
+            "color": "#ffffff"
+        },
+        {
+            "name": "INFO",
+            "enabled": true,
+            "color": "#ADD8E6"
+        },
+        {
+            "name": "ERROR",
+            "enabled": true,
+            "color": "#ff4500"
+        }
+    ],
+    "log.reverse": true,
+    "log.regexes": [],
+    "log.regexinclude": false,
+    "log.fontsize": 0.9,
+    "general": {
+        "fontfamily": "Consolas, 'Courier New', monospace",
+        "fontsize": "13"
+    },
+    "log.hosts": [
+        {
+            "host": "JOMA-DEV",
+            "enabled": true,
+            "processes": [
+                {
+                    "name": "NETadminDriverEngine",
+                    "enabled": true,
+                    "disabled": false
+                },
+                {
+                    "name": "Netadmin.Billing.Engine",
+                    "enabled": true,
+                    "disabled": false
+                },
+                {
+                    "name": "Netadmin.TaskEngine",
+                    "enabled": true,
+                    "disabled": false
+                },
+                {
+                    "name": "NetadminAssemblyEngine",
+                    "enabled": true,
+                    "disabled": false
+                },
+                {
+                    "name": "NetadminBatchEngine",
+                    "enabled": true,
+                    "disabled": false
+                },
+                {
+                    "name": "NetadminDiscoveryEngine",
+                    "enabled": true,
+                    "disabled": false
+                },
+                {
+                    "name": "NetadminEngineController",
+                    "enabled": true,
+                    "disabled": false
+                },
+                {
+                    "name": "NetadminImportExportEngine",
+                    "enabled": true,
+                    "disabled": false
+                },
+                {
+                    "name": "NetadminJobEngine",
+                    "enabled": true,
+                    "disabled": false
+                },
+                {
+                    "name": "NetadminSubscriptionEngine",
+                    "enabled": true,
+                    "disabled": false
+                }
+            ]
+        },
+        {
+            "host": "JOMA-DEV-91",
+            "enabled": true,
+            "processes": [
+                {
+                    "name": "NETadminDriverEngine",
+                    "enabled": true,
+                    "disabled": false
+                },
+                {
+                    "name": "Netadmin.TaskEngine",
+                    "enabled": true,
+                    "disabled": false
+                },
+                {
+                    "name": "NetadminAssemblyEngine",
+                    "enabled": true,
+                    "disabled": false
+                },
+                {
+                    "name": "NetadminBatchEngine",
+                    "enabled": true,
+                    "disabled": false
+                },
+                {
+                    "name": "NetadminEngineController",
+                    "enabled": true
+                },
+                {
+                    "name": "NetadminImportExportEngine",
+                    "enabled": true,
+                    "disabled": false
+                },
+                {
+                    "name": "NetadminJobEngine",
+                    "enabled": true,
+                    "disabled": false
+                },
+                {
+                    "name": "NetadminSubscriptionEngine",
+                    "enabled": true,
+                    "disabled": false
+                }
+            ]
+        }
+    ]
+}

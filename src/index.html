@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>OmniLog</title>
+  <base href="./">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+  <style>
+
+    #stacktrace{
+      font-size: 1.2em;
+    }
+.st-type {
+  color: #0a8472;
+  font-weight: bolder;
+}
+
+.st-method {
+  color: #70c9ba;
+  font-weight: bolder;
+}
+
+.st-frame-params {
+  color: #ffffff;
+  font-weight: normal;
+}
+
+.st-param-type { color: #0a8472; }
+
+.st-param-name { color: #ffffff; }
+
+.st-file { color: #f8b068; }
+
+.st-line { color: #ff4f68; }    
+  </style>
+
+  <!-- Insert this line above script imports  -->
+  <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+
+  <script src="assets/jquery-3.6.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+  <script src="assets/resize.js"></script>
+  <script src="assets/netstack.js"></script>
+  
+  <!-- Insert this line after script imports -->
+  <script>if (window.module) module = window.module;</script>
+
+</head>
+<body style="margin:0;">
+  <app-root></app-root>
+</body>
+
+</html>

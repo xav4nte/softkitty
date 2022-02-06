@@ -1,0 +1,48 @@
+{
+  "asar": true,
+  "directories": {
+    "output": "release/"
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": true,
+    "allowElevation": true,
+    "allowToChangeInstallationDirectory": true,
+    "deleteAppDataOnUninstall": true,
+    "createDesktopShortcut": true,
+    "installerIcon": "src/assets/o.ico",
+    "uninstallerIcon": "src/assets/o.ico",
+    "uninstallDisplayName": "Uninstall OmniLog"
+  },  
+  "files": [
+    "**/*",
+    "!**/*.ts",
+    "!*.map",
+    "!package.json",
+    "!package-lock.json"
+  ],
+  "extraResources": [
+    {
+      "from": "dist/log-client",
+      "to": "app",
+      "filter": [
+        "**/*"
+      ]
+    }
+  ],
+  "win": {
+    "icon": "src/assets/o.ico"
+  },
+  "portable": {
+  },
+  "mac": {
+    "target": [
+      "dmg"
+    ]
+  },
+  "linux": {
+    "target": [
+      "AppImage"
+    ]
+  }
+}

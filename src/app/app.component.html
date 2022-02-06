@@ -1,0 +1,277 @@
+
+<style>
+  html,
+  body,
+  .main-content{
+    height: 100vh;
+    background: #212529;
+    color: #fff;
+    margin: 0;
+    font-family: 'consolas';    
+    font-size: .8rem;
+    overflow: hidden;
+
+  }
+#menu{
+  box-shadow: 3px 0px 4px 6px orange;
+}
+  table{
+    width:100%;
+  }
+
+  tr{
+    cursor: pointer;
+  }
+  .main-content{
+    display: flex;
+    flex-direction: row;
+  }
+
+  .container{
+    border: 1px solid #ccc;
+  }
+
+  th{
+    text-align: left;
+  }
+
+  .resizer{
+    flex: 0 0 auto;
+  width: 10px;  
+  background: url(https://raw.githubusercontent.com/RickStrahl/jquery-resizable/master/assets/vsizegrip.png) center center no-repeat #535353;
+  min-height: 200px;
+  cursor: col-resize;    
+  }
+
+  .resizer-horizontal {
+  /* flex: 0 0 auto;
+  height: 18px;
+  background: url(https://raw.githubusercontent.com/RickStrahl/jquery-resizable/master/assets/hsizegrip.png) center center no-repeat #535353; */
+  /* cursor: row-resize; */
+  background: #ccc;
+  height: 2px;
+}
+
+.content{
+  padding: 10px;
+}
+
+.TRACE{
+  color: #fff;
+}
+
+.DEBUG{
+  color: lightyellow;
+}
+
+.INFO{
+  color: lightblue;
+}
+
+.WARNING{
+  color: orange;
+}
+.ERROR{
+  color: orangered;
+}
+
+#log-details{
+  font-size: 14px;
+}
+
+</style>
+
+
+<div class="main-content" role="main" [ngStyle]="{'font-family': generalSettings.fontFamily, 'font-size': generalSettings.fontSize + 'px'}">
+  <div class="left-panel" style="width:100%">
+    <div style="margin: 10px;">
+      <div class="btn-group" role="group" aria-label="Basic example">
+        <button class="btn btn-sm btn-outline-warning" *ngIf="reverse" (click)="toggleReverse()"><i class="fas fa-sort-amount-up"></i></button>
+        <button class="btn btn-sm btn-outline-warning" *ngIf="!reverse" (click)="toggleReverse()"><i class="fas fa-sort-amount-down-alt"></i></button>
+        <button class="btn btn-sm btn-outline-warning" (click)="clear()"><i class="fas fa-times"></i></button>
+        <button class="btn btn-sm btn-outline-warning" *ngIf="autoReload" (click)="toggleAutoReload()"><i class="fas fa-pause"></i></button>
+        <button class="btn btn-sm btn-outline-warning" *ngIf="!autoReload" (click)="toggleAutoReload()"><i class="fas fa-play"></i></button>
+        <button class="btn btn-sm btn-outline-warning" data-bs-toggle="collapse" data-bs-target="#menu" aria-expanded="false"><i class="fas fa-cog"></i></button>
+        <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#configmodal" aria-expanded="false"><i class="fas fa-code"></i></button>
+      </div>
+      <div class="btn-group" style="margin-left: 10px;" role="group" aria-label="Basic example">
+        <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#regexmodal"><i class="fas fa-asterisk"></i></button>
+        <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#filtermodal"><i class="fas fa-search"></i><span style="margin-left:5px;" *ngIf="filterString">"{{filterString}}"</span></button>
+      </div>
+
+      </div>   
+     <div style="flex-basis:70%;display:flex;flex-direction: column;height:100%;">
+
+      <div class="top-panel content" style="height:80%;overflow-y: auto;overflow-x:hidden;position:relative;">
+
+        <table class="table table-dark table-hover table-sm" id="log-table" style="overflow-y: auto;overflow-x:hidden;">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Host</th>
+              <th>Process</th>
+              <th>Level</th>
+              <th>Message
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngIf="reverse">            
+            <tr *ngFor="let log of logs.reverse()" (click)="details(log.id)" [style.color]="log.levelObject.color">
+              <td style="white-space: nowrap;width:130px;">{{log.timestamp}}</td>
+              <td style="white-space: nowrap;width:130px;">{{log.host}}</td>
+              <td style="white-space: nowrap;width:250px;">{{log.process}}</td>
+              <td style="white-space: nowrap;width:80px;">{{log.level}}</td>
+              <td>{{log.message}}</td>
+            </tr>
+            </ng-container>
+            <ng-container *ngIf="!reverse">            
+              <tr *ngFor="let log of logs" (click)="details(log.id)" [style.color]="log.levelObject.color">
+                <td style="white-space: nowrap;width:130px;">{{log.timestamp}}</td>
+                <td style="white-space: nowrap;width:130px;">{{log.host}}</td>
+                <td style="white-space: nowrap;width:250px;">{{log.process}}</td>
+                <td style="white-space: nowrap;width:80px;">{{log.level}}</td>
+                <td>{{log.message}}</td>
+              </tr>
+              </ng-container>            
+          </tbody>
+          </table>
+      </div>
+      <div class="resizer-horizontal"></div>
+      <div class="content" style="flex-basis:20%;overflow:auto;flex-grow:1;">
+          <div id="log-details" class="tab-pane fade show active" role="tabpanel">
+            <div *ngIf="currentLog != null">
+              <div class="d-flex justify-content-between">
+              <div>
+                Timestamp: {{currentLog.timestamp}}
+              </div>
+              <div>
+              Host: {{currentLog.host}}
+            </div>
+            <div>
+              Process: {{currentLog.process}}            
+            </div>
+            <div [style.color]="currentLog.levelObject.color">
+              Level: {{currentLog.level}}
+            </div>
+          </div>
+            <div>
+              Message: {{currentLog.message}}
+            </div>
+            <pre id="stacktrace" style="white-space: pre-wrap;" *ngIf="currentLog.exception">
+              {{currentLog.exception}}
+            </pre>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="content collapse" id="menu" style="width:40%;background:#212529;flex-grow:1;position:absolute;right:0;top:0;bottom:0;overflow-y:auto;overflow-x:hidden;">
+    <h3>Levels</h3>
+    <div style="column-count: 2;">
+    <div *ngFor="let level of levels;">
+      <div class="form-check form-switch">
+        <label class="form-check-label" style="width:45px;">
+          <input type="checkbox" class="form-check-input" [checked]="level.enabled" (change)="toggleLevel(level)" />
+          {{level.name}}
+        </label>
+        <input type="color" value="{{level.color}}" (change)="changeColor(level, $event.target.value)" style="height:16px;margin-left:11px;"/>
+      </div>
+
+      </div>
+    </div>
+      <div *ngFor="let host of hosts;" style="margin-top: 30px;">
+        <h4>
+          <div class="form-check form-switch">
+            <label class="form-check-label">
+            <input type="checkbox" class="form-check-input" [checked]="host.enabled" (change)="toggleHost(host)" />
+            {{host.host}}
+
+          </label>
+          </div>
+        </h4>
+        <div style="column-count:2;">
+        <div *ngFor="let process of host.processes">
+          <div class="form-check form-switch">
+            <label class="form-check-label">
+            <input type="checkbox" class="form-check-input" [disabled]="process.disabled" [checked]="process.enabled" (change)="toggleProcess(process)" />
+            {{process.name}}
+    
+          </label>
+          </div>
+        </div>
+      </div>
+        </div>      
+  </div>  
+</div>
+<div class="modal fade" id="filtermodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="background-color: #212529;">
+      <div class="modal-body">
+        <div class="input-group">
+          <input type="search" id="filter" name="filter" class="form-control" (keyup)="filter($event)" style="background: #33383e;color: #fff;border: none;font-size: 18px;">
+          <button type="button" data-bs-dismiss="modal" class="btn btn-warning input-group-text"><i class="fas fa-search"></i></button>
+  
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="configmodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" style="background-color: #212529;">
+      <div class="modal-body">
+        <div>
+          <textarea style="width:100%;height:500px;background-color:#212529;color:#fff;white-space: pre;">
+<target xsi:type="NLogViewer"
+    name="viewer"
+    includeSourceInfo="true"
+    layout="${longdate}|${level:uppercase=true}|${processname}|${logger}|${message}|${exception:format=tostring}"
+    [attr.address]="{{serverAddress}}">
+      <parameter name="process" layout="${processname}"/>
+      <parameter name="message" layout="${message}"/>
+      <parameter name="level" layout="${level:uppercase=true}"/>
+      <parameter name="exception" layout="${exception:format=tostring}" />
+      <parameter name="timestamp" layout="${time}"/>
+</target> 
+          </textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="regexmodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="background-color: #212529;">
+      <div class="modal-body">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" (change)="toggleRegexInclude()" [checked]="regexInclude" id="flexSwitchCheckDefault">
+          <label class="form-check-label" for="flexSwitchCheckDefault" style="color: #fff;">Include</label>
+        </div>
+        <div class="input-group">
+          <input type="search" id="regex" name="regex" class="form-control" style="background: #33383e;color: #fff;border: none;font-size: 18px;">
+          <button type="button" (click)="addRegex()" class="btn btn-warning input-group-text"><i class="fas fa-plus"></i></button>
+        </div>
+        <div>
+          <table class="table table-dark table-hover">
+            <tbody>
+              <tr *ngFor="let regex of regexes">
+                <td>{{regex}}</td>
+                <td style="text-align:right;padding-right:0;">            
+                  <button class="btn btn-sm btn-warning float-right" (click)="removeRegex(regex);"><i class="far fa-times"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-warning" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

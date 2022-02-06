@@ -1,6 +1,6 @@
 {
   "name": "omnilog",
-  "version": "1.0.6",
+  "version": "1.0.9",
   "author": "Jonas Malm",
   "displayName": "OmniLog",
   "main": "./src/electron.prod.js",
@@ -33,6 +33,7 @@
     "@angular/platform-browser-dynamic": "~11.2.14",
     "dgram": "^1.0.1",
     "dns": "^0.2.2",
+    "electron-log": "^4.4.6",
     "electron-preferences": "^2.5.0",
     "fast-xml-parser": "^4.0.0-beta.8",
     "ncp": "^2.0.0",
@@ -55,6 +56,7 @@
     "cross-var": "^1.1.0",
     "electron": "^16.0.7",
     "electron-builder": "^22.14.5",
+    "electron-builder-squirrel-windows": "^23.0.0-alpha.3",
     "electron-packager": "^15.4.0",
     "jasmine-core": "~3.6.0",
     "jasmine-spec-reporter": "~5.0.0",

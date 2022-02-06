@@ -8,7 +8,10 @@ const menu = require('./menu');
 
 const server = require('./server');
 let win;
-require('update-electron-app')();
+require('update-electron-app')({
+    repo: 'jontemalm/omnilog',
+    logger: require('electron-log')
+});
 
 const createWindow = () => {
     // set timeout to render the window not until the Angular 

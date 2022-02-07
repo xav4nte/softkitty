@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { catchError, tap, switchAll } from 'rxjs/operators';
 import { EMPTY, observable, Subject } from 'rxjs';
@@ -25,7 +25,7 @@ declare var $: any;
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'log-client';
   private socket$: WebSocketSubject<any>;
   private messagesSubject$ = new Subject();
@@ -81,7 +81,32 @@ export class AppComponent {
     
     //server.start();
   }
+  ngOnInit(): void {
+    const notification = document.getElementById('notification');
+    const message = document.getElementById('message');
+    const restartButton = document.getElementById('restart-button');
 
+    this._ipc.on('update_available', () => {
+      this._ipc.removeAllListeners('update_available');
+      message.innerText = 'A new update is available. Downloading now...';
+      notification.classList.remove('hidden');
+    });
+    this._ipc.on('update_downloaded', () => {
+      this._ipc.removeAllListeners('update_downloaded');
+      message.innerText = 'Update Downloaded. It will be installed on restart. Restart now?';
+      restartButton.classList.remove('hidden');
+      notification.classList.remove('hidden');
+    });
+    
+
+  }
+  closeNotification() {
+    const notification = document.getElementById('notification');
+    notification.classList.add('hidden');
+  }
+  restartApp() {
+    this._ipc.send('restart_app');
+  }
   public init(): void{
 // window.setTimeout(() =>{
 //   $('.main-content').css('font-size', this.fontSize + 'rem');
@@ -91,24 +116,6 @@ export class AppComponent {
 
   }
 
-  public increaseFont():void{
-    // if (this.fontSize > 1.4){
-    //   return;
-    // }
-    // this.fontSize = this.fontSize +.1;
-    // $('.main-content').css('font-size', this.fontSize + 'rem');
-    // this.saveSettings(SETTING_FONTSIZE, this.fontSize);
-  }
-
-  public decreaseFont():void{
-    // console.log(this.fontSize)
-    // if (this.fontSize < 0.6){
-    //   return;
-    // }
-    // this.fontSize = this.fontSize -.1;
-    // $('.main-content').css('font-size', this.fontSize + 'rem');
-    // this.saveSettings(SETTING_FONTSIZE, this.fontSize);
-  }
 
   public toggleAutoReload(): void{
     this.autoReload = !this.autoReload;
@@ -243,9 +250,6 @@ export class AppComponent {
         var process = host.processes.find((p) =>{
           return p.name.trim() == msg.process.trim();
         });
-
-
-        //var process = processes.length ? processes[0] : {name: msg.process, enabled: true};
 
         if (!process.enabled || !level.enabled){
           return;

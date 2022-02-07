@@ -35,7 +35,21 @@
 
 .st-file { color: #f8b068; }
 
-.st-line { color: #ff4f68; }    
+.st-line { color: #ff4f68; }   
+
+#notification {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 200px;
+  padding: 20px;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+.hidden {
+  display: none;
+}
   </style>
 
   <!-- Insert this line above script imports  -->
@@ -49,9 +63,17 @@
   
   <!-- Insert this line after script imports -->
   <script>if (window.module) module = window.module;</script>
-
 </head>
 <body style="margin:0;">
+  <div id="notification" class="hidden">
+  <p id="message"></p>
+  <button id="close-button" onClick="closeNotification()">
+    Close
+  </button>
+  <button id="restart-button" onClick="restartApp()" class="hidden">
+    Restart
+  </button>
+</div>
   <app-root></app-root>
 </body>
 

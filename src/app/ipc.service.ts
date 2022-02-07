@@ -24,6 +24,13 @@ export class IpcService {
     this._ipc.on(channel, listener);
   }
 
+  public removeAllListeners(channel: string): void {
+    if (!this._ipc) {
+      return;
+    }
+    this._ipc.removeAllListeners(channel);
+  }
+
   public send(channel: string, ...args): any {
     if (!this._ipc) {
       return;

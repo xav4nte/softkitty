@@ -1,17 +1,14 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const url = require('url');
+const { autoUpdater } = require('electron-updater');
 
 const preferences = require('./preferences');
 const menu = require('./menu');
 
 const server = require('./server');
 let win;
-require('update-electron-app')({
-    repo: 'jontemalm/omnilog',
-    logger: require('electron-log')
-});
 
 const createWindow = () => {
     // set timeout to render the window not until the Angular 
@@ -58,6 +55,10 @@ const createWindow = () => {
             win = null;
         });
 
+        win.once('ready-to-show', () => {
+            autoUpdater.checkForUpdatesAndNotify();
+          });
+          
         require('dns').lookup(require('os').hostname(), function (err, add, fam) {
             console.log('addr: ' + add);
             preferences.value('server.ip', add);
@@ -65,6 +66,8 @@ const createWindow = () => {
 
         server.start();
     }, 10000); 
+
+
 }
 
 // This method will be called when Electron has finished
@@ -88,3 +91,18 @@ app.on('activate', () => {
         createWindow();
     }
 });
+
+ipcMain.on('app_version', (event) => {
+    event.sender.send('app_version', { version: app.getVersion() });
+});
+
+autoUpdater.on('update-available', () => {
+    mainWindow.webContents.send('update_available');
+});
+autoUpdater.on('update-downloaded', () => {
+    mainWindow.webContents.send('update_downloaded');
+});  
+
+ipcMain.on('restart_app', () => {
+    autoUpdater.quitAndInstall();
+  });

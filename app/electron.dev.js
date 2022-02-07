@@ -1,10 +1,13 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const url = require('url');
 
+
+const logger = require('electron-log');
 const preferences = require('./preferences');
 const menu = require('./menu');
+
 
 const server = require('./server');
 let win;
@@ -16,7 +19,7 @@ const createWindow = () => {
         // Create the browser window.
         win = new BrowserWindow({
             icon: './src/assets/o.ico',
-            preload: path.join(__dirname, "preload.js"),
+            //preload: path.join(__dirname, "preload.js"),
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false,
@@ -27,12 +30,24 @@ const createWindow = () => {
 
         win.maximize();
 
+        setTimeout(() =>{
+            win.loadURL(url.format({
+                pathname: '127.0.0.1:4200',
+                protocol: 'http:',
+                slashes: true
+            })).then((x) =>{
+                logger.log('then');
+                console.log(x);
+            }).catch((e) =>{
+                logger.log('catch', e);
+                console.log(e);
+            }).finally((f) =>{
+                logger.log('finally');
+                console.log(f);
+            });            
+        }, 4000)
         // and load the app.
-        win.loadURL(url.format({
-            pathname: 'localhost:4200',
-            protocol: 'http:',
-            slashes: true
-        }));
+
         // let pathIndex = '../app/index.html';
 
         // if (fs.existsSync(path.join(__dirname, '../dist/index.html'))) {
@@ -84,3 +99,11 @@ app.on('activate', () => {
         createWindow();
     }
 });
+
+
+ipcMain.on('app_version', (event) => {
+    logger.log('current version', app.getVersion())
+    event.sender.send('app_version', { version: app.getVersion() });
+});
+
+

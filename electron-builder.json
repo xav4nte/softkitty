@@ -1,7 +1,14 @@
 {
+  "appId": "io.malm.omnilog",
+  "publish":{
+    "provider": "github",
+    "token": "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"
+  },
   "asar": true,
   "directories": {
     "output": "release/"
+  },
+  "squirrelWindows":{
   },
   "nsis": {
     "oneClick": false,

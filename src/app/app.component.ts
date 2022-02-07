@@ -47,6 +47,7 @@ export class AppComponent implements OnInit {
   public ipAddress = null;
   public listeningPort = 9999;
   public serverAddress = '';
+  public appVersion = '0.0.0';
   public generalSettings = {
     fontFamily: "Consolas, 'Courier New', monospace",
     fontSize: '16px'
@@ -57,20 +58,22 @@ export class AppComponent implements OnInit {
     this.init();
     this.preferences = _ipc.send('getPreferences');
 
-    this.levels = this.preferences[SETTING_LEVELS] || [];
-    this.hosts = this.preferences[SETTING_HOSTS] || [];
-    this.reverse = this.preferences[SETTING_REVERSE] ?? true;
-    this.regexInclude = this.preferences[SETTING_REGEXINCLUDE] ?? true;
-    this.regexes = this.preferences[SETTING_REGEXES] || [];
-    this.fontSize = this.preferences[SETTING_FONTSIZE] || .8;
-    this.generalSettings.fontFamily = this.preferences[SETTING_FONTFAMILY];
-    this.generalSettings.fontSize = this.preferences[SETTING_FONTFAMILY];
+    if (this.preferences){
+      this.levels = this.preferences[SETTING_LEVELS] || [];
+      this.hosts = this.preferences[SETTING_HOSTS] || [];
+      this.reverse = this.preferences[SETTING_REVERSE] ?? true;
+      this.regexInclude = this.preferences[SETTING_REGEXINCLUDE] ?? true;
+      this.regexes = this.preferences[SETTING_REGEXES] || [];
+      this.fontSize = this.preferences[SETTING_FONTSIZE] || .8;
+      this.generalSettings.fontFamily = this.preferences[SETTING_FONTFAMILY];
+      this.generalSettings.fontSize = this.preferences[SETTING_FONTFAMILY];
+  
+      this.listeningPort = this.preferences.server.listeningport || 9999;
+      this.ipAddress = this.preferences.server.ip || '127.0.0.1';
+      this.serverAddress = 'udp://' + this.ipAddress + ':' + this.listeningPort;
+  
+    }
 
-    console.log(this.preferences);
-    this.listeningPort = this.preferences.server.listeningport || 9999;
-    this.ipAddress = this.preferences.server.ip || '127.0.0.1';
-
-    this.serverAddress = 'udp://' + this.ipAddress + ':' + this.listeningPort;
     _ipc.on('preferencesUpdated', (e, preferences) => {
       this.listeningPort = preferences.server.listeningport;
       this.serverAddress = 'udp://' + this.ipAddress + ':' + this.listeningPort;
@@ -78,8 +81,6 @@ export class AppComponent implements OnInit {
       this.generalSettings.fontSize = preferences.general.fontsize;
     });
 
-    
-    //server.start();
   }
   ngOnInit(): void {
     const notification = document.getElementById('notification');
@@ -97,7 +98,12 @@ export class AppComponent implements OnInit {
       restartButton.classList.remove('hidden');
       notification.classList.remove('hidden');
     });
-    
+
+    this._ipc.on('app_version', (version) => {
+      this.appVersion = version.version;
+    });
+
+    this._ipc.send('app_version');
 
   }
   closeNotification() {

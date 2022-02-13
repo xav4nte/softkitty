@@ -1,6 +1,7 @@
 const { app, Menu } = require('electron')
 const server = require('./server');
 const preferences = require('./preferences');
+const { autoUpdater } = require('electron-updater');
 
 const isMac = process.platform === 'darwin'
 var menu = Menu.buildFromTemplate([
@@ -11,7 +12,10 @@ var menu = Menu.buildFromTemplate([
                 preferences.show();
 
             }},
-            {role:'quit'}
+            {role:'quit'},
+            {label: 'Check For Updates', click(){
+                autoUpdater.checkForUpdatesAndNotify();
+            }}
         ],
         
     },

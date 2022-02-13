@@ -1,10 +1,11 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const url = require('url');
 
 const preferences = require('./preferences');
 const menu = require('./menu');
+const logger = require('electron-log');
 
 const server = require('./server');
 let win;
@@ -16,14 +17,16 @@ const createWindow = () => {
         // Create the browser window.
         win = new BrowserWindow({
             icon: './src/assets/o.ico',
-            preload: path.join(__dirname, "preload.js"),
+            preload: path.join(__dirname, "preload.js"),            
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false,
-                
+                devTools: true,            
             },
 
         });
+
+        win.webContents.openDevTools();
 
         win.maximize();
 
@@ -60,6 +63,21 @@ const createWindow = () => {
           })
 
         server.start();
+
+        win.webContents.once('dom-ready', () => {
+            console.log('sending version');
+            win.webContents.send('app_version', app.getVersion());
+            win.webContents.send('server_status', server.running());
+            console.log('sent version');
+        });
+
+        setInterval(() =>{
+            console.log('sending status');
+            win.webContents.send('server_status', server.running());
+            console.log('sent status');
+        }, 60000)
+
+
     }, 10000); 
 }
 
@@ -84,3 +102,5 @@ app.on('activate', () => {
         createWindow();
     }
 });
+
+

@@ -1,5 +1,10 @@
 {
   "asar": true,
+  "appId": "io.malm.omnilog",
+  "publish":{
+    "provider": "github",
+    "token": "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"
+  },
   "directories": {
     "output": "release/"
   },

@@ -29,21 +29,21 @@ var menu = Menu.buildFromTemplate([
           { role: 'togglefullscreen' },
         ]
       },  
-      {
-          label: 'Log reciever',
-          submenu:[
-              {
-                label: 'Start server', click(){
-                    server.start();
-                }
-            },
-            {
-                label: 'Stop server', click(){
-                    server.stop();
-                }
-            }            
-          ]
-      }  
+    //   {
+    //       label: 'Log reciever',
+    //       submenu:[
+    //           {
+    //             label: 'Start server', click(){
+    //                 server.start();
+    //             }
+    //         },
+    //         {
+    //             label: 'Stop server', click(){
+    //                 server.stop();
+    //             }
+    //         }            
+    //       ]
+    //   }  
 ])
 Menu.setApplicationMenu(menu);
 // const template = [

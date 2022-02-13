@@ -35,6 +35,8 @@ export class IpcService {
     if (!this._ipc) {
       return;
     }
+
+    console.log('sending', channel);
     return this._ipc.sendSync(channel, ...args);
   }
 

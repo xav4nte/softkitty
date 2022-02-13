@@ -5,6 +5,8 @@ import { EMPTY, observable, Subject } from 'rxjs';
 import { IpcService } from './ipc.service';
 //import * as server from '../server.js';
 import { HttpClient  } from '@angular/common/http';
+// import logger from 'electron-log';
+import { IpcRendererEvent } from 'electron';
 
 //import * as settings from 'electron-app-settings';
 // import { ipcMain } from 'electron';
@@ -47,15 +49,32 @@ export class AppComponent implements OnInit {
   public ipAddress = null;
   public listeningPort = 9999;
   public serverAddress = '';
+  public appVersion = '0.0.0';
+  public serverRunning = true;
+  
   public generalSettings = {
     fontFamily: "Consolas, 'Courier New', monospace",
     fontSize: '16px'
   }
-  constructor(private _ipc: IpcService, private http:HttpClient){
 
+  public enabledRegexes(){
+    return this.regexes.filter((r) =>{
+      return r.enabled;
+    }).length;
+  }
+
+  public enabledHosts(){
+    return this.hosts.filter((r) =>{
+      return r.enabled;
+    }).length;
+  }
+  constructor(private _ipc: IpcService, private http:HttpClient){
+console.log('ctor');
     this.connect();
     this.init();
     this.preferences = _ipc.send('getPreferences');
+    // let x = _ipc.send('app_version');
+    // console.log('sent version request', x);
 
     this.levels = this.preferences[SETTING_LEVELS] || [];
     this.hosts = this.preferences[SETTING_HOSTS] || [];
@@ -87,17 +106,29 @@ export class AppComponent implements OnInit {
     const restartButton = document.getElementById('restart-button');
 
     this._ipc.on('update_available', () => {
+      console.log('update_available');
       this._ipc.removeAllListeners('update_available');
       message.innerText = 'A new update is available. Downloading now...';
       notification.classList.remove('hidden');
     });
     this._ipc.on('update_downloaded', () => {
+      console.log('update_available');
       this._ipc.removeAllListeners('update_downloaded');
       message.innerText = 'Update Downloaded. It will be installed on restart. Restart now?';
       restartButton.classList.remove('hidden');
       notification.classList.remove('hidden');
     });
     
+    this._ipc.on('app_version', (event: IpcRendererEvent, version) => {
+      console.log('got version', version);
+      this.appVersion = version;
+    });
+
+    
+    this._ipc.on('server_status', (event: IpcRendererEvent, status: boolean) => {
+      console.log('got status', status);
+      this.serverRunning = status;
+    });
 
   }
   closeNotification() {
@@ -165,7 +196,7 @@ export class AppComponent implements OnInit {
   }
   public addRegex(): void{
     let value = $('#regex').val();
-    this.regexes.push(value);
+    this.regexes.push({enabled: true, regex: value});
     this.saveSettings(SETTING_REGEXES, this.regexes);
   }
 
@@ -258,9 +289,11 @@ export class AppComponent implements OnInit {
         if (this.regexInclude && this.regexes.length){
           let isOk = false;
           this.regexes.forEach((regex) =>{
-            let re = new RegExp(regex);
-            if (re.test(msg.message)){
-              isOk = true;
+            if (regex.enabled){
+              let re = new RegExp(regex.regex);
+              if (re.test(msg.message)){
+                isOk = true;
+              }  
             }
           });
           if (!isOk){
@@ -271,9 +304,12 @@ export class AppComponent implements OnInit {
         if (!this.regexInclude && this.regexes.length){
           let isOk = true;
           this.regexes.forEach((regex) =>{
-            let re = new RegExp(regex);
-            if (re.test(msg.message)){
-              isOk = false;
+            if (regex.enabled){
+              let re = new RegExp(regex.regex);
+              if (re.test(msg.message)){
+                isOk = false;
+              }
+  
             }
 
           });

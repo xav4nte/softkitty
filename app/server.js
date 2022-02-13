@@ -14,6 +14,7 @@ const parser = new XMLParser(options);
 
 var udp = require('dgram');
 let connections = [];
+let isRunning = false;
 
 wss.on('connection', (ws) => {
   connections.push(ws);
@@ -22,6 +23,14 @@ wss.on('connection', (ws) => {
 });
 
 let server = null;
+
+function running(){
+  if (!server || !isRunning){
+    return false;
+  }
+
+  return true;
+}
 function stop(){
   if (!server){
     return;
@@ -29,16 +38,19 @@ function stop(){
 
   console.log('Stopping server...');
   server.close();
+  isRunning = false;
 }
 function start(){
   // creating a udp server
   console.log('Starting server...');
   server = udp.createSocket('udp4');
+  isRunning = true;
 
 // emits when any error occurs
 server.on('error',function(error){
   console.log('Error: ' + error);
   server.close();
+  isRunning = false;
 });
 
   // emits on new datagram msg
@@ -93,6 +105,7 @@ server.on('error',function(error){
     console.log('Server is listening at port ' + port);
     console.log('Server ip :' + ipaddr);
     console.log('Server is IP4/IP6 : ' + family);
+    isRunning = true;
   });
 
   //emits after the socket is closed using socket.close();
@@ -110,4 +123,4 @@ preferences.on('save', (preferences) => {
 	start();
 });
 
-module.exports = {start, stop};
+module.exports = {start, stop, running};

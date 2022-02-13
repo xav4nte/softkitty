@@ -26,8 +26,13 @@
         }
     ],
     "log.reverse": true,
-    "log.regexes": [],
-    "log.regexinclude": false,
+    "log.regexes": [
+        {
+            "enabled": true,
+            "regex": "(.*)"
+        }
+    ],
+    "log.regexinclude": true,
     "log.fontsize": 0.9,
     "general": {
         "fontfamily": "Consolas, 'Courier New', monospace",

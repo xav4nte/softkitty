@@ -79,8 +79,33 @@
   font-size: 14px;
 }
 
+#notification{
+  z-index: 10001;
+  width: 300px!important;
+  background: #212529;
+  color: #fff;
+  border: 1px solid #fff;  
+}
+
+#statusbar{
+  font-size: 13px;
+  padding-right: 10px;
+}
+
+#app-version{
+  float: right;
+}
 </style>
 
+<div id="notification" class="hidden">
+  <p id="message"></p>
+  <button id="close-button" class="btn btn-sm btn-outline-warning" (click)="closeNotification()">
+    Close
+  </button>
+  <button id="restart-button" class="btn btn-sm btn-outline-warning float-end" (click)="restartApp()" class="hidden">
+    Restart
+  </button>
+</div>
 
 <div class="main-content" role="main" [ngStyle]="{'font-family': generalSettings.fontFamily, 'font-size': generalSettings.fontSize + 'px'}">
   <div class="left-panel" style="width:100%">
@@ -205,6 +230,13 @@
         </div>      
   </div>  
 </div>
+<div id="statusbar" style="display:flex;background-color: #1477b9;color:#fff;position: fixed;bottom: 0;left: 0;width: 100%;height: 20px;">
+  <div id="server-running" *ngIf="serverRunning" style="color: white;">Server: Running</div>
+  <div id="server-running" *ngIf="!serverRunning" style="color: white;">Server: Not Running</div>
+  <div id="active-regexes" style="margin-left: 15px;"><a data-bs-toggle="modal" data-bs-target="#regexmodal" href="#" style="color:#fff;text-decoration: none;">Active regex rules: {{enabledRegexes()}}</a></div>
+  <div id="active-hosts" style="margin-left: 15px;"><a data-bs-toggle="collapse" data-bs-target="#menu" aria-expanded="false" href="#" style="color:#fff;text-decoration: none;">Active hosts: {{enabledHosts()}}</a></div>
+  <div id="app-version" style="position: absolute;right:10px;">{{appVersion}}</div>
+</div>
 <div class="modal fade" id="filtermodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content" style="background-color: #212529;">
@@ -259,7 +291,15 @@
           <table class="table table-dark table-hover">
             <tbody>
               <tr *ngFor="let regex of regexes">
-                <td>{{regex}}</td>
+                <td style="width:50px;">
+                  <div class="form-check form-switch">
+                  <label class="form-check-label">
+                    <input type="checkbox" class="form-check-input" [checked]="regex.enabled" />
+                  </label>
+                </div>
+                              
+              </td>
+                <td>{{regex.regex}}</td>
                 <td style="text-align:right;padding-right:0;">            
                   <button class="btn btn-sm btn-warning float-right" (click)="removeRegex(regex);"><i class="far fa-times"></i></button>
                 </td>

@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const url = require('url');
 const { autoUpdater } = require('electron-updater');
+const logger = require('electron-log');
 
 const preferences = require('./preferences');
 const menu = require('./menu');
@@ -58,11 +59,33 @@ const createWindow = () => {
         win.once('ready-to-show', () => {
             autoUpdater.checkForUpdatesAndNotify();
           });
+
+          autoUpdater.on('update-available', () => {
+            logger.log('update available');
+            win.webContents.send('update_available');
+        });
+        autoUpdater.on('update-downloaded', () => {
+            logger.log('update downloaded');
+            win.webContents.send('update_downloaded');
+        });  
+
+        win.webContents.session.setCertificateVerifyProc((request, callback) => {
+            callback(0);
+        })          
           
         require('dns').lookup(require('os').hostname(), function (err, add, fam) {
             console.log('addr: ' + add);
             preferences.value('server.ip', add);
           })
+
+
+        win.webContents.once('dom-ready', () => {
+            win.webContents.send('app_version', app.getVersion());
+        });
+
+        setInterval(() =>{
+            win.webContents.send('server_status', server.running());
+        }, 5000);        
 
         server.start();
     }, 10000); 
@@ -92,16 +115,6 @@ app.on('activate', () => {
     }
 });
 
-ipcMain.on('app_version', (event) => {
-    event.sender.send('app_version', { version: app.getVersion() });
-});
-
-autoUpdater.on('update-available', () => {
-    mainWindow.webContents.send('update_available');
-});
-autoUpdater.on('update-downloaded', () => {
-    mainWindow.webContents.send('update_downloaded');
-});  
 
 ipcMain.on('restart_app', () => {
     autoUpdater.quitAndInstall();

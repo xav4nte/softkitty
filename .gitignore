@@ -46,3 +46,4 @@ testem.log
 Thumbs.db
 app/node_modules/
 release/
+electron-builder.json

@@ -5,14 +5,14 @@
     },
     "log.levels": [
         {
-            "name": "DEBUG",
-            "enabled": true,
-            "color": "#ffffe0"
-        },
-        {
-            "name": "TRACE",
+            "name": "INFO",
             "enabled": true,
             "color": "#ffffff"
+        },
+        {
+            "name": "INFO",
+            "enabled": true,
+            "color": "#ffffe0"
         },
         {
             "name": "INFO",
@@ -20,16 +20,65 @@
             "color": "#ADD8E6"
         },
         {
-            "name": "ERROR",
+            "name": "INFO",
             "enabled": true,
-            "color": "#ff4500"
+            "color": "#ffffff"
+        },
+        {
+            "name": "INFO",
+            "enabled": true,
+            "color": "#ffffe0"
+        },
+        {
+            "name": "INFO",
+            "enabled": true,
+            "color": "#ffffe0"
+        },
+        {
+            "name": "INFO",
+            "enabled": true,
+            "color": "#ffffff"
+        },
+        {
+            "name": "INFO",
+            "enabled": true,
+            "color": "#ffffff"
+        },
+        {
+            "name": "INFO",
+            "enabled": true,
+            "color": "#ffffe0"
+        },
+        {
+            "name": "INFO",
+            "enabled": true,
+            "color": "#ffffe0"
+        },
+        {
+            "name": "INFO",
+            "enabled": true,
+            "color": "#ffffff"
+        },
+        {
+            "name": "TRACE",
+            "enabled": true,
+            "color": "#ffffff"
+        },
+        {
+            "name": "DEBUG",
+            "enabled": true,
+            "color": "#ffffe0"
         }
     ],
     "log.reverse": true,
     "log.regexes": [
         {
             "enabled": true,
-            "regex": "(.*)"
+            "regex": "(Got)(.*)"
+        },
+        {
+            "enabled": true,
+            "regex": "(Milk)(.*)"
         }
     ],
     "log.regexinclude": true,
@@ -97,44 +146,56 @@
         },
         {
             "host": "JOMA-DEV-91",
-            "enabled": true,
+            "enabled": false,
             "processes": [
                 {
                     "name": "NETadminDriverEngine",
                     "enabled": true,
-                    "disabled": false
+                    "disabled": true
                 },
                 {
                     "name": "Netadmin.TaskEngine",
                     "enabled": true,
-                    "disabled": false
+                    "disabled": true
                 },
                 {
                     "name": "NetadminAssemblyEngine",
                     "enabled": true,
-                    "disabled": false
+                    "disabled": true
                 },
                 {
                     "name": "NetadminBatchEngine",
                     "enabled": true,
-                    "disabled": false
+                    "disabled": true
                 },
                 {
                     "name": "NetadminEngineController",
-                    "enabled": true
+                    "enabled": true,
+                    "disabled": true
                 },
                 {
                     "name": "NetadminImportExportEngine",
                     "enabled": true,
-                    "disabled": false
+                    "disabled": true
                 },
                 {
                     "name": "NetadminJobEngine",
                     "enabled": true,
-                    "disabled": false
+                    "disabled": true
                 },
                 {
                     "name": "NetadminSubscriptionEngine",
+                    "enabled": true,
+                    "disabled": true
+                }
+            ]
+        },
+        {
+            "host": "OmniLog",
+            "enabled": true,
+            "processes": [
+                {
+                    "name": "OmniLog",
                     "enabled": true,
                     "disabled": false
                 }

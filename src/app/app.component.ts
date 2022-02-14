@@ -7,7 +7,7 @@ import { IpcService } from './ipc.service';
 import { HttpClient  } from '@angular/common/http';
 // import logger from 'electron-log';
 import { IpcRendererEvent } from 'electron';
-
+import * as moment from 'moment';
 //import * as settings from 'electron-app-settings';
 // import { ipcMain } from 'electron';
 // const preferences = ipcMain.sendSync('getPreferences');
@@ -33,7 +33,7 @@ export class AppComponent implements OnInit {
   private messagesSubject$ = new Subject();
   public messages$ = this.messagesSubject$.pipe(switchAll(), catchError(e => { throw e }));
   public incrementer = 1;
-  public logs = [];
+  public logs: ILog[] = [];
   public allLogs = [];
   public currentLog = null
   public hosts = [];
@@ -58,6 +58,7 @@ export class AppComponent implements OnInit {
   }
 
   public enabledRegexes(){
+    console.log(this.regexes);
     return this.regexes.filter((r) =>{
       return r.enabled;
     }).length;
@@ -127,6 +128,7 @@ console.log('ctor');
     
     this._ipc.on('server_status', (event: IpcRendererEvent, status: boolean) => {
       console.log('got status', status);
+      this.log('Got server status: ' + status);
       this.serverRunning = status;
     });
 
@@ -205,6 +207,11 @@ console.log('ctor');
     this.saveSettings(SETTING_REGEXES, this.regexes);
   }
 
+  public toggleRegex(regex): void{
+    regex.enabled = !regex.enabled;
+    this.saveSettings(SETTING_REGEXES, this.regexes);
+  }
+
   public filter(event): void{
     this.filterString = event.target.value;
     if (!this.filterString.length){
@@ -220,126 +227,132 @@ console.log('ctor');
     if (!this.socket$ || this.socket$.closed) {
       this.socket$ = this.getNewWebSocket();
 
-      this.socket$.subscribe((msg) =>{
-        if (!this.autoReload) return;
-
-        msg.id = this.incrementer;
-        msg.exception = $('<div>').html(msg.exception).text();
-        // if (msg.exception){
-        //   msg.exception = msg.exception.replace(/   /g, '\n');
-        // }
-
-        if (!msg.host || !msg.process){
-          return;
-        }
-
-        let level = this.levels.find((l) =>{
-          return l.name === msg.level;
-        });
-
-
-        if (!level){
-          let color = '#ffffff';
-          switch(msg.level){
-            case 'DEBUG':
-              color = '#ffffe0';
-              break;
-            case 'INFO':
-              color = '#ADD8E6';
-              break;
-            case 'WARNING':
-              color = '#FFA500';
-              break;
-            case 'ERROR':
-              color = '#ff4500';
-              break;
-          }
-          level = {name: msg.level, enabled: true, color};
-          this.levels.push(level);
-        }
-
-
-        let host: any = this.hosts.find((h) =>{
-          return h.host === msg.host;
-        });
-
-        if (!host){
-          host = {host: msg.host, enabled: true, processes: [{name: msg.process, enabled: true}]};
-          this.hosts.push(host);
-        }else{
-          let process = host.processes.filter((process) =>{
-            return process.name === msg.process;
-          })
-          if (!process.length){
-            host.processes.push({name: msg.process, enabled: host.enabled, disabled: false});
-            host.processes = host.processes.sort((a, b) =>{
-              return a.name > b.name ? 1 : -1;
-            })
-          }
-        }
-
-        var process = host.processes.find((p) =>{
-          return p.name.trim() == msg.process.trim();
-        });
-
-        if (!process.enabled || !level.enabled){
-          return;
-        }
-
-        if (this.regexInclude && this.regexes.length){
-          let isOk = false;
-          this.regexes.forEach((regex) =>{
-            if (regex.enabled){
-              let re = new RegExp(regex.regex);
-              if (re.test(msg.message)){
-                isOk = true;
-              }  
-            }
-          });
-          if (!isOk){
-            return;
-          }
-        }
-
-        if (!this.regexInclude && this.regexes.length){
-          let isOk = true;
-          this.regexes.forEach((regex) =>{
-            if (regex.enabled){
-              let re = new RegExp(regex.regex);
-              if (re.test(msg.message)){
-                isOk = false;
-              }
-  
-            }
-
-          });
-          if (!isOk){
-            return;
-          }
-
-        }
-
-        msg.levelObject = level;
-
-        if (!this.filterString || (msg.message && msg.message.toString().toLowerCase().indexOf(this.filterString.toLowerCase()) > -1)){
-          console.log('matching filter');
-          if (this.logs.length > 1000){
-            this.logs.shift();
-          }
-          this.logs.push(msg);  
-          if (!this.reverse){
-            $('.top-panel').get(0).scrollTo(0,$('.top-panel').get(0).scrollHeight);
-          }
-        }
-
-        if (this.allLogs.length > 1000){
-          this.allLogs.shift();
-        }
-        this.allLogs.push(msg);
-        this.incrementer++;
-
+      this.socket$.subscribe((msg: ILog) =>{
+        this.addLog(msg);
       });
     }
+  }
+
+  private addLog(msg: ILog){
+    if (!this.autoReload) return;
+
+    msg.id = this.incrementer;
+    msg.exception = $('<div>').html(msg.exception).text();
+    // if (msg.exception){
+    //   msg.exception = msg.exception.replace(/   /g, '\n');
+    // }
+
+    if (!msg.host || !msg.process){
+      return;
+    }
+
+    let level = this.levels.find((l) =>{
+      return l.name === msg.level;
+    });
+
+
+    if (!level){
+      let color = '#ffffff';
+      switch(msg.level){
+        case 'DEBUG':
+          color = '#ffffe0';
+          break;
+        case 'INFO':
+          color = '#ADD8E6';
+          break;
+        case 'WARNING':
+          color = '#FFA500';
+          break;
+        case 'ERROR':
+          color = '#ff4500';
+          break;
+      }
+      level = {name: msg.level, enabled: true, color};
+      this.levels.push(level);
+    }
+
+
+    let host: any = this.hosts.find((h) =>{
+      return h.host === msg.host;
+    });
+
+    if (!host){
+      host = {host: msg.host, enabled: true, processes: [{name: msg.process, enabled: true}]};
+      this.hosts.push(host);
+    }else{
+      if (!host.enabled){
+        return;
+      }
+      let process = host.processes.filter((process) =>{
+        return process.name === msg.process;
+      })
+      if (!process.length){
+        host.processes.push({name: msg.process, enabled: host.enabled, disabled: false});
+        host.processes = host.processes.sort((a, b) =>{
+          return a.name > b.name ? 1 : -1;
+        })
+      }
+    }
+
+    var process = host.processes.find((p) =>{
+      return p.name.trim() == msg.process.trim();
+    });
+
+    if (!process.enabled || !level.enabled){
+      return;
+    }
+
+    if (this.regexInclude && this.regexes.length){
+      let isOk = false;
+      this.regexes.forEach((regex) =>{
+        if (regex.enabled){
+          let re = new RegExp(regex.regex);
+          if (re.test(msg.message)){
+            isOk = true;
+          }  
+        }
+      });
+      if (!isOk){
+        return;
+      }
+    }
+
+    if (!this.regexInclude && this.regexes.length){
+      let isOk = true;
+      this.regexes.forEach((regex) =>{
+        if (regex.enabled){
+          let re = new RegExp(regex.regex);
+          if (re.test(msg.message)){
+            isOk = false;
+          }
+
+        }
+
+      });
+      if (!isOk){
+        return;
+      }
+
+    }
+
+    msg.levelObject = level;
+
+    if (!this.filterString || (msg.message && msg.message.toString().toLowerCase().indexOf(this.filterString.toLowerCase()) > -1)){
+      console.log('matching filter');
+      if (this.logs.length > 1000){
+        this.logs.shift();
+      }
+      this.logs.push(msg);  
+      if (!this.reverse){
+        $('.top-panel').get(0).scrollTo(0,$('.top-panel').get(0).scrollHeight);
+      }
+    }
+
+    if (this.allLogs.length > 1000){
+      this.allLogs.shift();
+    }
+    this.allLogs.push(msg);
+    this.incrementer++;
   }
   
   private getNewWebSocket() {
@@ -368,5 +381,30 @@ console.log('ctor');
     }
 
   }
+
+  log(msg: string){
+    let level = this.levels.filter((lvl) =>{
+      lvl.name = 'INFO'
+    });
+    this.addLog({
+      host: 'OmniLog',
+      level: 'INFO',
+      process: 'OmniLog',
+      message: msg,
+      timestamp: moment().format('hh:mm:ss'),
+      levelObject: level.length ? level[0] : { color: 'lightblue'}
+    })
+  }
+}
+
+export interface ILog{
+  exception?: string;
+  host: string;
+  id?: number;
+  level: string;
+  message: string;
+  process: string;
+  timestamp: string;
+  levelObject?: any;
 }
 

@@ -294,7 +294,7 @@
                 <td style="width:50px;">
                   <div class="form-check form-switch">
                   <label class="form-check-label">
-                    <input type="checkbox" class="form-check-input" [checked]="regex.enabled" />
+                    <input type="checkbox" class="form-check-input" [checked]="regex.enabled" (change)="toggleRegex(regex);" />
                   </label>
                 </div>
                               

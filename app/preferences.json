@@ -5,59 +5,9 @@
     },
     "log.levels": [
         {
-            "name": "INFO",
-            "enabled": true,
-            "color": "#ffffff"
-        },
-        {
-            "name": "INFO",
+            "name": "DEBUG",
             "enabled": true,
             "color": "#ffffe0"
-        },
-        {
-            "name": "INFO",
-            "enabled": true,
-            "color": "#ADD8E6"
-        },
-        {
-            "name": "INFO",
-            "enabled": true,
-            "color": "#ffffff"
-        },
-        {
-            "name": "INFO",
-            "enabled": true,
-            "color": "#ffffe0"
-        },
-        {
-            "name": "INFO",
-            "enabled": true,
-            "color": "#ffffe0"
-        },
-        {
-            "name": "INFO",
-            "enabled": true,
-            "color": "#ffffff"
-        },
-        {
-            "name": "INFO",
-            "enabled": true,
-            "color": "#ffffff"
-        },
-        {
-            "name": "INFO",
-            "enabled": true,
-            "color": "#ffffe0"
-        },
-        {
-            "name": "INFO",
-            "enabled": true,
-            "color": "#ffffe0"
-        },
-        {
-            "name": "INFO",
-            "enabled": true,
-            "color": "#ffffff"
         },
         {
             "name": "TRACE",
@@ -65,22 +15,13 @@
             "color": "#ffffff"
         },
         {
-            "name": "DEBUG",
+            "name": "INFO",
             "enabled": true,
-            "color": "#ffffe0"
+            "color": "#ADD8E6"
         }
     ],
     "log.reverse": true,
-    "log.regexes": [
-        {
-            "enabled": true,
-            "regex": "(Got)(.*)"
-        },
-        {
-            "enabled": true,
-            "regex": "(Milk)(.*)"
-        }
-    ],
+    "log.regexes": [],
     "log.regexinclude": true,
     "log.fontsize": 0.9,
     "general": {
@@ -90,57 +31,57 @@
     "log.hosts": [
         {
             "host": "JOMA-DEV",
-            "enabled": true,
+            "enabled": false,
             "processes": [
                 {
                     "name": "NETadminDriverEngine",
                     "enabled": true,
-                    "disabled": false
+                    "disabled": true
                 },
                 {
                     "name": "Netadmin.Billing.Engine",
                     "enabled": true,
-                    "disabled": false
+                    "disabled": true
                 },
                 {
                     "name": "Netadmin.TaskEngine",
                     "enabled": true,
-                    "disabled": false
+                    "disabled": true
                 },
                 {
                     "name": "NetadminAssemblyEngine",
                     "enabled": true,
-                    "disabled": false
+                    "disabled": true
                 },
                 {
                     "name": "NetadminBatchEngine",
                     "enabled": true,
-                    "disabled": false
+                    "disabled": true
                 },
                 {
                     "name": "NetadminDiscoveryEngine",
                     "enabled": true,
-                    "disabled": false
+                    "disabled": true
                 },
                 {
                     "name": "NetadminEngineController",
                     "enabled": true,
-                    "disabled": false
+                    "disabled": true
                 },
                 {
                     "name": "NetadminImportExportEngine",
                     "enabled": true,
-                    "disabled": false
+                    "disabled": true
                 },
                 {
                     "name": "NetadminJobEngine",
                     "enabled": true,
-                    "disabled": false
+                    "disabled": true
                 },
                 {
                     "name": "NetadminSubscriptionEngine",
                     "enabled": true,
-                    "disabled": false
+                    "disabled": true
                 }
             ]
         },
@@ -192,12 +133,12 @@
         },
         {
             "host": "OmniLog",
-            "enabled": true,
+            "enabled": false,
             "processes": [
                 {
                     "name": "OmniLog",
                     "enabled": true,
-                    "disabled": false
+                    "disabled": true
                 }
             ]
         }

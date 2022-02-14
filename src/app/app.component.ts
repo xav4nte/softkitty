@@ -58,7 +58,6 @@ export class AppComponent implements OnInit {
   }
 
   public enabledRegexes(){
-    console.log(this.regexes);
     return this.regexes.filter((r) =>{
       return r.enabled;
     }).length;
@@ -70,7 +69,6 @@ export class AppComponent implements OnInit {
     }).length;
   }
   constructor(private _ipc: IpcService, private http:HttpClient){
-console.log('ctor');
     this.connect();
     this.init();
     this.preferences = _ipc.send('getPreferences');
@@ -86,7 +84,6 @@ console.log('ctor');
     this.generalSettings.fontFamily = this.preferences[SETTING_FONTFAMILY];
     this.generalSettings.fontSize = this.preferences[SETTING_FONTFAMILY];
 
-    console.log(this.preferences);
     this.listeningPort = this.preferences.server.listeningport || 9999;
     this.ipAddress = this.preferences.server.ip || '127.0.0.1';
 
@@ -107,13 +104,11 @@ console.log('ctor');
     const restartButton = document.getElementById('restart-button');
 
     this._ipc.on('update_available', () => {
-      console.log('update_available');
       this._ipc.removeAllListeners('update_available');
       message.innerText = 'A new update is available. Downloading now...';
       notification.classList.remove('hidden');
     });
     this._ipc.on('update_downloaded', () => {
-      console.log('update_available');
       this._ipc.removeAllListeners('update_downloaded');
       message.innerText = 'Update Downloaded. It will be installed on restart. Restart now?';
       restartButton.classList.remove('hidden');
@@ -121,13 +116,11 @@ console.log('ctor');
     });
     
     this._ipc.on('app_version', (event: IpcRendererEvent, version) => {
-      console.log('got version', version);
       this.appVersion = version;
     });
 
     
     this._ipc.on('server_status', (event: IpcRendererEvent, status: boolean) => {
-      console.log('got status', status);
       this.log('Got server status: ' + status);
       this.serverRunning = status;
     });
@@ -247,7 +240,7 @@ console.log('ctor');
     }
 
     let level = this.levels.find((l) =>{
-      return l.name === msg.level;
+      return l.name.toLowerCase() === msg.level.toLowerCase();
     });
 
 
@@ -338,7 +331,6 @@ console.log('ctor');
     msg.levelObject = level;
 
     if (!this.filterString || (msg.message && msg.message.toString().toLowerCase().indexOf(this.filterString.toLowerCase()) > -1)){
-      console.log('matching filter');
       if (this.logs.length > 1000){
         this.logs.shift();
       }
@@ -372,7 +364,6 @@ console.log('ctor');
     });
 
     if (log){      
-      console.log('showing id ', id);
       this.currentLog = log;
 
       window.setTimeout(() =>{
@@ -383,17 +374,17 @@ console.log('ctor');
   }
 
   log(msg: string){
-    let level = this.levels.filter((lvl) =>{
-      lvl.name = 'INFO'
-    });
-    this.addLog({
-      host: 'OmniLog',
-      level: 'INFO',
-      process: 'OmniLog',
-      message: msg,
-      timestamp: moment().format('hh:mm:ss'),
-      levelObject: level.length ? level[0] : { color: 'lightblue'}
-    })
+    // let level = this.levels.filter((lvl) =>{
+    //   lvl.name == 'INFO'
+    // });
+    // this.addLog({
+    //   host: 'OmniLog',
+    //   level: 'INFO',
+    //   process: 'OmniLog',
+    //   message: msg,
+    //   timestamp: moment().format('hh:mm:ss'),
+    //   levelObject: level
+    // })
   }
 }
 

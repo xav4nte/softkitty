@@ -8,7 +8,7 @@ const ElectronPreferences = require('electron-preferences');
 
 const preferences = new ElectronPreferences({
 	css: 'custom-style.css',
-	dataStore: path.resolve(__dirname, 'preferences.json'),
+	dataStore: path.resolve(__dirname, 'omnilog.preferences.json'),
 	defaults: {
 		server: {
 			listeningport: '9999'

@@ -167,11 +167,18 @@ export class AppComponent implements OnInit {
     this.saveSettings(SETTING_LEVELS, this.levels);
   }
 
-  public toggleHost(host: any): void{
+  public toggleHost(host: any,event: Event): void{
+    let element = $(event.target as Element).closest('h4').next();
     host.enabled = !host.enabled;
     host.processes.forEach(p =>{
       p.disabled = !host.enabled;
     })
+
+    if (host.enabled){
+      element.show();
+    }else{
+      element.hide();
+    }
     this.saveSettings(SETTING_HOSTS, this.hosts);
   }
 

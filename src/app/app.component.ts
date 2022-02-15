@@ -107,6 +107,28 @@ export class AppComponent implements OnInit {
       this.serverRunning = status;
     });
 
+    $('body').on('keyup', (e) =>{
+      console.log(e);
+      if ($('.modal:visible').length > 0){
+        return;
+      }
+      this.keyboardShortcuts(e.originalEvent.code);
+    })
+  }
+
+  keyboardShortcuts(key){
+    switch(key){
+      case 'KeyC':
+        $('#menu').collapse('toggle');
+        break;
+      case 'KeyS':
+        $('#filtermodal').modal('show');
+        break;
+      case 'KeyR':
+        $('#regexmodal').modal('show');
+        break;
+      }
+
   }
   closeNotification() {
     const notification = document.getElementById('notification');

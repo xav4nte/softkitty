@@ -2,13 +2,14 @@
 
 // Const electron = require('electron');
 // const app = electron.app;
+const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 const path = require('path');
 const os = require('os');
 const ElectronPreferences = require('electron-preferences');
 
 const preferences = new ElectronPreferences({
 	css: 'custom-style.css',
-	dataStore: path.resolve(__dirname, 'omnilog.preferences.json'),
+	dataStore: path.resolve(app.getPath("appData"), 'OmniLog','omnilog.preferences.json'),
 	defaults: {
 		server: {
 			listeningport: '9999'

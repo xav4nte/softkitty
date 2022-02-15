@@ -10,6 +10,8 @@ const server = require('./server');
 let win;
 
 const createWindow = () => {
+
+    logger.log(path.resolve(app.getPath("appData"), 'OmniLog','omnilog.preferences.json'));
     // set timeout to render the window not until the Angular 
     // compiler is ready to show the project
     setTimeout(() => {
@@ -51,13 +53,15 @@ const createWindow = () => {
             autoUpdater.checkForUpdatesAndNotify();
           });
 
-          autoUpdater.on('update-available', () => {
+          autoUpdater.on('update-available', (info) => {
             logger.log('update available');
-            win.webContents.send('update_available');
+            logger.log(info);
+            win.webContents.send('update_available', info.version);
         });
-        autoUpdater.on('update-downloaded', () => {
+        autoUpdater.on('update-downloaded', (info) => {
             logger.log('update downloaded');
-            win.webContents.send('update_downloaded');
+            logger.log(info);
+            win.webContents.send('update_downloaded', info.releaseNotes);
         });  
 
         win.webContents.session.setCertificateVerifyProc((request, callback) => {
@@ -78,6 +82,10 @@ const createWindow = () => {
             win.webContents.send('server_status', server.running());
         }, 5000);        
 
+        setInterval(() =>{
+            autoUpdater.checkForUpdatesAndNotify();
+        }, 60000);        
+
         server.start();
     }, 10000); 
 
@@ -95,7 +103,7 @@ var menu = Menu.buildFromTemplate([
             {label:'Preferences (JSON)', click(){
                 console.log('sending event')
                 app.emit('raw_preferences');
-                BrowserWindow.getAllWindows[0].webContents.send('raw_preferences');
+                win.webContents.send('raw_preferences');
                 ipcMain.emit('raw_preferences');
             }},
             {role:'quit'},

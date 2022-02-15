@@ -2,6 +2,7 @@ const { app, BrowserWindow, Menu } = require('electron');
 const fs = require('fs');
 const url = require('url');
 const preferences = require('./preferences');
+const { autoUpdater, UpdateDownloadedEvent } = require('electron-updater');
 const logger = require('electron-log');
 const server = require('./server');
 
@@ -42,6 +43,24 @@ const createWindow = () => {
             win = null;
         });
 
+
+        win.once('ready-to-show', () => {
+            autoUpdater.checkForUpdatesAndNotify();
+          });
+
+          autoUpdater.on('update-available', (info) => {
+            logger.log('update available');
+            win.webContents.send('update_available', info.version);
+        });
+        autoUpdater.on('update-downloaded', (info) => {
+            logger.log('update downloaded');
+            win.webContents.send('update_downloaded', info.releaseNotes);
+        }); 
+
+        win.webContents.session.setCertificateVerifyProc((request, callback) => {
+            callback(0);
+        })           
+
         require('dns').lookup(require('os').hostname(), function (err, add, fam) {
             preferences.value('server.ip', add);
           })
@@ -59,6 +78,7 @@ const createWindow = () => {
             console.log('sending status');
             win.webContents.send('server_status', server.running());
             console.log('sent status');
+            autoUpdater.checkForUpdatesAndNotify();
         }, 60000)
 
         logger.log('ds', preferences.dataStore);

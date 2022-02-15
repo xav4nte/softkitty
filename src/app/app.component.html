@@ -105,6 +105,8 @@
 #json-preferences button{
   border-radius: 0;
 }
+
+
 </style>
 
 <div id="notification" class="hidden">
@@ -245,6 +247,7 @@
   <div id="server-running" *ngIf="!serverRunning" style="color: white;">Server: Not Running</div>
   <div id="active-regexes" style="margin-left: 15px;"><a data-bs-toggle="modal" data-bs-target="#regexmodal" href="#" style="color:#fff;text-decoration: none;">Active regex rules: {{enabledRegexes()}}</a></div>
   <div id="active-hosts" style="margin-left: 15px;"><a data-bs-toggle="collapse" data-bs-target="#menu" aria-expanded="false" href="#" style="color:#fff;text-decoration: none;">Active hosts: {{enabledHosts()}}</a></div>
+  <div id="active-processes" style="margin-left: 15px;"><a data-bs-toggle="collapse" data-bs-target="#menu" aria-expanded="false" href="#" style="color:#fff;text-decoration: none;">Active processes: {{enabledProcesses()}}</a></div>
   <div id="app-version" style="position: absolute;right:10px;">{{appVersion}}</div>
 </div>
 
@@ -267,7 +270,7 @@
     </div>
   </div>
 </div>
-<div class="modal fade" id="filtermodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="filtermodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="top: 30vh;">
   <div class="modal-dialog">
     <div class="modal-content" style="background-color: #212529;">
       <div class="modal-body">
@@ -277,15 +280,20 @@
   
         </div>
       </div>
+      <div class="modal-footer" style="justify-content: flex-start;">
+        <button class="btn btn-warning float-left" data-bs-dismiss="modal" (click)="clearFilter();">Clear</button>
+        <button class="btn btn-warning" data-bs-dismiss="modal">Close</button>
+      </div>      
     </div>
   </div>
 </div>
 
-<div class="modal fade" id="configmodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="configmodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="top: 20vh;">
   <div class="modal-dialog modal-lg">
     <div class="modal-content" style="background-color: #212529;">
       <div class="modal-body">
         <div>
+          <div>Paste this NLog target into your NLog config file.</div>
           <textarea style="width:100%;height:500px;background-color:#212529;color:#fff;white-space: pre;">
 <target xsi:type="NLogViewer"
     name="viewer"
@@ -297,15 +305,18 @@
       <parameter name="level" layout="${level:uppercase=true}"/>
       <parameter name="exception" layout="${exception:format=tostring}" />
       <parameter name="timestamp" layout="${time}"/>
-</target> 
-          </textarea>
+</target></textarea>
         </div>
       </div>
+      <div class="modal-footer" style="justify-content: flex-start;">
+        <button class="btn btn-warning" data-bs-dismiss="modal">Close</button>
+      </div>      
+
     </div>
   </div>
 </div>
 
-<div class="modal fade" id="regexmodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="regexmodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="top: 30vh;">
   <div class="modal-dialog">
     <div class="modal-content" style="background-color: #212529;">
       <div class="modal-body">

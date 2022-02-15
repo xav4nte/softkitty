@@ -81,14 +81,14 @@ export class AppComponent implements OnInit {
     const restartButton = document.getElementById('restart-button');
     $('#json-preferences-content').html(JSON.stringify(this._preferences, null, 2))
 
-    this._ipc.on('update_available', () => {
+    this._ipc.on('update_available', (version) => {
       this._ipc.removeAllListeners('update_available');
-      message.innerText = 'A new update is available. Downloading now...';
+      message.innerText = 'A new update (' + version + ') is available. Downloading now...';
       notification.classList.remove('hidden');
     });
-    this._ipc.on('update_downloaded', () => {
+    this._ipc.on('update_downloaded', (releaseNotes) => {
       this._ipc.removeAllListeners('update_downloaded');
-      message.innerText = 'Update Downloaded. It will be installed on restart. Restart now?';
+      message.innerText = 'Update Downloaded. It will be installed on restart. Restart now?\n' + releaseNotes;
       restartButton.classList.remove('hidden');
       notification.classList.remove('hidden');
     });
@@ -127,6 +127,21 @@ export class AppComponent implements OnInit {
     return this.hosts.filter((r) =>{
       return r.enabled;
     }).length;
+  }
+
+  public enabledProcesses(){
+    let enabledHosts = this.hosts.filter((r) =>{
+      return r.enabled;
+    });
+
+    let count = 0;
+    enabledHosts.forEach((host) =>{
+      count += host.processes.filter((p) =>{
+        return p.enabled && !p.disabled;
+      }).length;
+    })
+
+    return count;
   }
 
   public closeRawConfig(): void{
@@ -208,6 +223,12 @@ export class AppComponent implements OnInit {
   public toggleRegex(regex): void{
     regex.enabled = !regex.enabled;
     this.saveSettings(SETTING_REGEXES, this.regexes);
+  }
+
+  public clearFilter(): void{
+    $('#filter').val('');
+    this.filterString = '';
+    this.logs = this.allLogs;
   }
 
   public filter(event): void{

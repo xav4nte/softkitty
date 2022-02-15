@@ -47,3 +47,4 @@ Thumbs.db
 app/node_modules/
 release/
 electron-builder.json
+app/omnilog.preferences.json

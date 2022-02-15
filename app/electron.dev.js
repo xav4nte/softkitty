@@ -1,13 +1,10 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
-const path = require('path');
+const { app, BrowserWindow, Menu } = require('electron');
 const fs = require('fs');
 const url = require('url');
-
 const preferences = require('./preferences');
-const menu = require('./menu');
 const logger = require('electron-log');
-
 const server = require('./server');
+
 let win;
 
 const createWindow = () => {
@@ -17,7 +14,6 @@ const createWindow = () => {
         // Create the browser window.
         win = new BrowserWindow({
             icon: './src/assets/o.ico',
-            preload: path.join(__dirname, "preload.js"),            
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false,
@@ -35,18 +31,7 @@ const createWindow = () => {
             pathname: 'localhost:4200',
             protocol: 'http:',
             slashes: true
-        }));
-        // let pathIndex = '../app/index.html';
-
-        // if (fs.existsSync(path.join(__dirname, '../dist/index.html'))) {
-        //    // Path when running electron in local folder
-        //   pathIndex = '../dist/index.html';
-        // }        
-        // win.loadURL(url.format({
-        //     pathname: path.join(__dirname, pathIndex),
-        //     protocol: 'file:',  
-        //     slashes: true
-        //   }));        
+        }));     
 
         // Emitted when the window is closed.
         win.on('closed', () => {
@@ -58,7 +43,6 @@ const createWindow = () => {
         });
 
         require('dns').lookup(require('os').hostname(), function (err, add, fam) {
-            console.log('addr: ' + add);
             preferences.value('server.ip', add);
           })
 
@@ -77,9 +61,64 @@ const createWindow = () => {
             console.log('sent status');
         }, 60000)
 
+        logger.log('ds', preferences.dataStore);
 
+
+     
     }, 10000); 
 }
+
+var menu = Menu.buildFromTemplate([
+    {
+        label: 'Menu',
+        submenu: [
+            {label:'Preferences', click(){
+                preferences.show();
+
+            }},
+            {label:'Preferences (JSON)', click(){
+                console.log('sending event')
+                win.webContents.send('raw_preferences');
+            }},
+            {role:'quit'},
+            {label: 'Check For Updates', click(){
+                autoUpdater.checkForUpdatesAndNotify();
+            }}
+        ],
+        
+    },
+    {
+        label: 'View',
+        submenu: [
+          { role: 'reload' },
+          { role: 'forceReload' },
+          { role: 'toggleDevTools' },
+          { type: 'separator' },
+          { role: 'resetZoom' },
+          { role: 'zoomIn' },
+          { role: 'zoomOut' },
+          { type: 'separator' },
+          { role: 'togglefullscreen' },
+        ]
+      },  
+    //   {
+    //       label: 'Log reciever',
+    //       submenu:[
+    //           {
+    //             label: 'Start server', click(){
+    //                 server.start();
+    //             }
+    //         },
+    //         {
+    //             label: 'Stop server', click(){
+    //                 server.stop();
+    //             }
+    //         }            
+    //       ]
+    //   }  
+])
+Menu.setApplicationMenu(menu);
+
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

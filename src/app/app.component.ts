@@ -1,25 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { catchError, tap, switchAll } from 'rxjs/operators';
-import { EMPTY, observable, Subject } from 'rxjs';
+import { catchError, switchAll } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 import { IpcService } from './ipc.service';
-//import * as server from '../server.js';
 import { HttpClient  } from '@angular/common/http';
-// import logger from 'electron-log';
 import { IpcRendererEvent } from 'electron';
 import * as moment from 'moment';
-//import * as settings from 'electron-app-settings';
-// import { ipcMain } from 'electron';
-// const preferences = ipcMain.sendSync('getPreferences');
-
-const SETTING_LEVELS = 'log.levels';
-const SETTING_HOSTS = 'log.hosts';
-const SETTING_REVERSE = 'log.reverse';
-const SETTING_REGEXINCLUDE = 'log.regexinclude';
-const SETTING_REGEXES = 'log.regexes';
-//const SETTING_FONTSIZE = 'log.fontsize';
-const SETTING_FONTFAMILY = 'general.fontfamily';
-const SETTING_FONTSIZE = 'general.fontsize';
+import { 
+  SETTING_LEVELS,
+  SETTING_HOSTS,
+  SETTING_REVERSE,
+  SETTING_REGEXINCLUDE,
+  SETTING_REGEXES,
+  SETTING_FONTFAMILY,
+  SETTING_FONTSIZE
+ } from './constants.js'
 
 declare var $: any;
 @Component({
@@ -29,9 +24,11 @@ declare var $: any;
 })
 export class AppComponent implements OnInit {
   title = 'log-client';
-  private socket$: WebSocketSubject<any>;
-  private messagesSubject$ = new Subject();
-  public messages$ = this.messagesSubject$.pipe(switchAll(), catchError(e => { throw e }));
+  private _socket: WebSocketSubject<any>;
+  private _messagesSubject = new Subject();
+  private _preferences = null;
+
+  public messages = this._messagesSubject.pipe(switchAll(), catchError(e => { throw e }));
   public incrementer = 1;
   public logs: ILog[] = [];
   public allLogs = [];
@@ -41,11 +38,8 @@ export class AppComponent implements OnInit {
   public autoReload = true;
   public filterString = '';
   public reverse = true;
-  private _reverseInterval = null;
-  private preferences = null;
   public regexInclude = true;
   public regexes = [];
-  private fontSize = .8;
   public ipAddress = null;
   public listeningPort = 9999;
   public serverAddress = '';
@@ -57,35 +51,20 @@ export class AppComponent implements OnInit {
     fontSize: '16px'
   }
 
-  public enabledRegexes(){
-    return this.regexes.filter((r) =>{
-      return r.enabled;
-    }).length;
-  }
-
-  public enabledHosts(){
-    return this.hosts.filter((r) =>{
-      return r.enabled;
-    }).length;
-  }
-  constructor(private _ipc: IpcService, private http:HttpClient){
+  constructor(private _ipc: IpcService){
     this.connect();
-    this.init();
-    this.preferences = _ipc.send('getPreferences');
-    // let x = _ipc.send('app_version');
-    // console.log('sent version request', x);
+    this._preferences = _ipc.send('getPreferences');
 
-    this.levels = this.preferences[SETTING_LEVELS] || [];
-    this.hosts = this.preferences[SETTING_HOSTS] || [];
-    this.reverse = this.preferences[SETTING_REVERSE] ?? true;
-    this.regexInclude = this.preferences[SETTING_REGEXINCLUDE] ?? true;
-    this.regexes = this.preferences[SETTING_REGEXES] || [];
-    this.fontSize = this.preferences[SETTING_FONTSIZE] || .8;
-    this.generalSettings.fontFamily = this.preferences[SETTING_FONTFAMILY];
-    this.generalSettings.fontSize = this.preferences[SETTING_FONTFAMILY];
+    this.levels = this._preferences[SETTING_LEVELS] || [];
+    this.hosts = this._preferences[SETTING_HOSTS] || [];
+    this.reverse = this._preferences[SETTING_REVERSE] ?? true;
+    this.regexInclude = this._preferences[SETTING_REGEXINCLUDE] ?? true;
+    this.regexes = this._preferences[SETTING_REGEXES] || [];
+    this.generalSettings.fontFamily = this._preferences[SETTING_FONTFAMILY];
+    this.generalSettings.fontSize = this._preferences[SETTING_FONTFAMILY];
 
-    this.listeningPort = this.preferences.server.listeningport || 9999;
-    this.ipAddress = this.preferences.server.ip || '127.0.0.1';
+    this.listeningPort = this._preferences.server.listeningport || 9999;
+    this.ipAddress = this._preferences.server.ip || '127.0.0.1';
 
     this.serverAddress = 'udp://' + this.ipAddress + ':' + this.listeningPort;
     _ipc.on('preferencesUpdated', (e, preferences) => {
@@ -94,14 +73,13 @@ export class AppComponent implements OnInit {
       this.generalSettings.fontFamily = preferences.general.fontfamily;
       this.generalSettings.fontSize = preferences.general.fontsize;
     });
-
-    
-    //server.start();
   }
+
   ngOnInit(): void {
     const notification = document.getElementById('notification');
     const message = document.getElementById('message');
     const restartButton = document.getElementById('restart-button');
+    $('#json-preferences-content').html(JSON.stringify(this._preferences, null, 2))
 
     this._ipc.on('update_available', () => {
       this._ipc.removeAllListeners('update_available');
@@ -119,6 +97,10 @@ export class AppComponent implements OnInit {
       this.appVersion = version;
     });
 
+    this._ipc.on('raw_preferences', (event: IpcRendererEvent) => {
+      console.log('got event')
+      $('#rawPreferencesModal').modal('show');
+    });
     
     this._ipc.on('server_status', (event: IpcRendererEvent, status: boolean) => {
       this.log('Got server status: ' + status);
@@ -133,23 +115,39 @@ export class AppComponent implements OnInit {
   restartApp() {
     this._ipc.send('restart_app');
   }
-  public init(): void{
-// window.setTimeout(() =>{
-//   $('.main-content').css('font-size', this.fontSize + 'rem');
 
-// }, 500);
-
-
+  //#region view methods
+  public enabledRegexes(){
+    return this.regexes.filter((r) =>{
+      return r.enabled;
+    }).length;
   }
 
+  public enabledHosts(){
+    return this.hosts.filter((r) =>{
+      return r.enabled;
+    }).length;
+  }
+
+  public closeRawConfig(): void{
+    $('#json-preferences').hide();
+  }
+
+  public saveRawConfig(): void{
+    // todo: error handling
+    let config = JSON.parse($('#json-preferences-content').text());
+    if (config){
+      this._ipc.send('setPreferences', config);
+    }
+  }
 
   public toggleAutoReload(): void{
     this.autoReload = !this.autoReload;
   }
 
   private saveSettings(name: string, value: any){
-    this.preferences[name] = value;
-    this._ipc.send('setPreferences', this.preferences);
+    this._preferences[name] = value;
+    this._ipc.send('setPreferences', this._preferences);
   }
 
   public toggleLevel(level: any): void{
@@ -222,25 +220,22 @@ export class AppComponent implements OnInit {
     });
     
   }
+  //#endregion
   
-  public connect(): void {
-    if (!this.socket$ || this.socket$.closed) {
-      this.socket$ = this.getNewWebSocket();
+  // Connect to websocket and start listening
+  private connect(): void {
+    if (!this._socket || this._socket.closed) {
+      this._socket = this.getNewWebSocket();
 
-      this.socket$.subscribe((msg: ILog) =>{
+      this._socket.subscribe((msg: ILog) =>{
         this.addLog(msg);
       });
     }
   }
 
+  // recieve log
   private addLog(msg: ILog){
     if (!this.autoReload) return;
-
-    msg.id = this.incrementer;
-    msg.exception = $('<div>').html(msg.exception).text();
-    // if (msg.exception){
-    //   msg.exception = msg.exception.replace(/   /g, '\n');
-    // }
 
     if (!msg.host || !msg.process){
       return;
@@ -335,6 +330,8 @@ export class AppComponent implements OnInit {
 
     }
 
+    msg.id = this.incrementer;
+    msg.exception = $('<div>').html(msg.exception).text();
     msg.levelObject = level;
 
     if (!this.filterString || (msg.message && msg.message.toString().toLowerCase().indexOf(this.filterString.toLowerCase()) > -1)){
@@ -358,10 +355,10 @@ export class AppComponent implements OnInit {
     return webSocket('ws://127.0.0.1:8088/');
   }
   sendMessage(msg: any) {
-    this.socket$.next(msg);
+    this._socket.next(msg);
   }
   close() {
-    this.socket$.complete(); 
+    this._socket.complete(); 
   }  
 
   details(id: number){

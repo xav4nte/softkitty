@@ -95,6 +95,16 @@
 #app-version{
   float: right;
 }
+
+#json-preferences-content{
+    color: #fff;
+    white-space: pre;
+    overflow: auto;
+}
+
+#json-preferences button{
+  border-radius: 0;
+}
 </style>
 
 <div id="notification" class="hidden">
@@ -236,6 +246,26 @@
   <div id="active-regexes" style="margin-left: 15px;"><a data-bs-toggle="modal" data-bs-target="#regexmodal" href="#" style="color:#fff;text-decoration: none;">Active regex rules: {{enabledRegexes()}}</a></div>
   <div id="active-hosts" style="margin-left: 15px;"><a data-bs-toggle="collapse" data-bs-target="#menu" aria-expanded="false" href="#" style="color:#fff;text-decoration: none;">Active hosts: {{enabledHosts()}}</a></div>
   <div id="app-version" style="position: absolute;right:10px;">{{appVersion}}</div>
+</div>
+
+<div class="modal fade" id="rawPreferencesModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" style="background-color: #212529;">
+      <div class="modal-header">
+        <h5 class="modal-title" style="color: #fff;">Configuration</h5>
+      </div>      
+      <div class="modal-body" style="overflow: auto;max-height:70vh;">
+        <div id="json-preferences-content" contenteditable="true" style="overflow: auto;">
+
+        </div>
+        
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-warning" data-bs-dismiss="modal">Close</button>
+        <button class="btn btn-warning" data-bs-dismiss="modal" (click)="saveRawConfig();">Save</button>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="modal fade" id="filtermodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">

@@ -106,7 +106,9 @@
   border-radius: 0;
 }
 
-
+.btn-warning{
+    border: none!important;
+}
 </style>
 
 <div id="notification" class="hidden">
@@ -192,7 +194,7 @@
               Level: {{currentLog.level}}
             </div>
           </div>
-            <div>
+            <div style="white-space: pre-wrap;">
               Message: {{currentLog.message}}
             </div>
             <pre id="stacktrace" style="white-space: pre-wrap;" *ngIf="currentLog.exception">

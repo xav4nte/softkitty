@@ -81,13 +81,15 @@ export class AppComponent implements OnInit {
     const restartButton = document.getElementById('restart-button');
     $('#json-preferences-content').html(JSON.stringify(this._preferences, null, 2))
 
-    this._ipc.on('update_available', (version) => {
+    this._ipc.on('update_available', (x, version) => {
       this._ipc.removeAllListeners('update_available');
+      console.log('update_available', version);
       message.innerText = 'A new update (' + version + ') is available. Downloading now...';
       notification.classList.remove('hidden');
     });
-    this._ipc.on('update_downloaded', (releaseNotes) => {
+    this._ipc.on('update_downloaded', (x, releaseNotes) => {
       this._ipc.removeAllListeners('update_downloaded');
+      console.log('update_downloaded', releaseNotes);
       message.innerText = 'Update Downloaded. It will be installed on restart. Restart now?\n' + releaseNotes;
       restartButton.classList.remove('hidden');
       notification.classList.remove('hidden');
@@ -376,7 +378,7 @@ export class AppComponent implements OnInit {
     msg.id = this.incrementer;
     msg.exception = $('<div>').html(msg.exception).text();
     msg.levelObject = level;
-
+    msg.message = $('<div>').html(msg.message).text();
     if (!this.filterString || (msg.message && msg.message.toString().toLowerCase().indexOf(this.filterString.toLowerCase()) > -1)){
       if (this.logs.length > 1000){
         this.logs.shift();
@@ -390,6 +392,7 @@ export class AppComponent implements OnInit {
     if (this.allLogs.length > 1000){
       this.allLogs.shift();
     }
+
     this.allLogs.push(msg);
     this.incrementer++;
   }

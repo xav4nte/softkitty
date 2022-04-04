@@ -16,5 +16,6 @@ $(function(){
 	$('#filtermodal').on('shown.bs.modal', () =>{
 		$('#filter').focus();
 		console.log('set focus');
+        $('#filter').get(0).select();
 	})
 })

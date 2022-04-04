@@ -109,9 +109,14 @@ export class AppComponent implements OnInit {
       this.serverRunning = status;
     });
 
+
+
     $('body').on('keyup', (e) =>{
       console.log(e);
       if ($('.modal:visible').length > 0){
+        return;
+      }
+      if (e.originalEvent.ctrlKey){
         return;
       }
       this.keyboardShortcuts(e.originalEvent.code);

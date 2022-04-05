@@ -156,7 +156,7 @@
           </thead>
           <tbody>
             <ng-container *ngIf="reverse">            
-            <tr *ngFor="let log of logs.reverse()" (click)="details(log.id)" [style.color]="log.levelObject.color">
+            <tr *ngFor="let log of logs.reverse()" (click)="details(log.id)" class="row-{{log.id}}" [style.color]="log.levelObject.color">
               <td style="white-space: nowrap;width:130px;">{{log.timestamp}}</td>
               <td style="white-space: nowrap;width:130px;">{{log.host}}</td>
               <td style="white-space: nowrap;width:250px;">{{log.process}}</td>
@@ -165,7 +165,7 @@
             </tr>
             </ng-container>
             <ng-container *ngIf="!reverse">            
-              <tr *ngFor="let log of logs" (click)="details(log.id)" [style.color]="log.levelObject.color">
+              <tr *ngFor="let log of logs" (click)="details(log.id)" class="row-{{log.id}}" [style.color]="log.levelObject.color">
                 <td style="white-space: nowrap;width:130px;">{{log.timestamp}}</td>
                 <td style="white-space: nowrap;width:130px;">{{log.host}}</td>
                 <td style="white-space: nowrap;width:250px;">{{log.process}}</td>

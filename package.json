@@ -1,6 +1,6 @@
 {
   "name": "omnilog",
-  "version": "1.1.18",
+  "version": "1.1.20",
   "author": "Jonas Malm",
   "displayName": "OmniLog",
   "main": "./src/electron.prod.js",
@@ -19,7 +19,7 @@
     "e2e": "ng e2e",
     "electron:dev": "electron ./app/electron.dev",
     "electron": "electron ./app/electron.prod",
-    "package": "electron-builder -c",
+    "package": "npm run build && electron-builder build --publish=never -c",
     "electron:build": "npm run build && electron-builder build --publish=always -c",
     "package:win2": "cross-var electron-packager ./ $npm_package_name-$npm_package_version --out=packages --platform=win32 --arch=all --overwrite ",
     "package:win": "npm run build && ncp package.json ./dist/log-client/package.json && ncp ./node_modules ./dist/log-client/node_modules \"dist/log-client/electron.prod.js\" && cross-var electron-packager dist/log-client $npm_package_name-$npm_package_version --out=packages --platform=win32 --arch=all --overwrite --debug",

@@ -420,7 +420,8 @@ export class AppComponent implements OnInit {
 
     if (log){      
       this.currentLog = log;
-
+      $('.active').removeClass('active');
+      $('.row-' + id).addClass('active');
       window.setTimeout(() =>{
         //$('#stacktrace').netStack();
       }, 500)

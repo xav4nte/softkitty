@@ -14,7 +14,7 @@ const createWindow = () => {
     setTimeout(() => {
         // Create the browser window.
         win = new BrowserWindow({
-            icon: './src/assets/o.ico',
+            icon: './src/assets/icon.png',
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false,

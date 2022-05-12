@@ -120,6 +120,7 @@ export class AppComponent implements OnInit {
         return;
       }
       this.keyboardShortcuts(e.originalEvent.code);
+      return false;
     })
   }
 
@@ -134,7 +135,21 @@ export class AppComponent implements OnInit {
       case 'KeyR':
         $('#regexmodal').modal('show');
         break;
-      }
+      case 'ArrowDown':
+        let id = $('.active').next().data('id');
+        if (id){
+          this.details(id);
+        }
+        //$('.active').removeClass('active').next().addClass('active');
+        break;
+      case 'ArrowUp':
+        let previd = $('.active').prev().data('id');
+        if (previd){
+          this.details(previd);
+        }
+        //$('.active').removeClass('active').prev().addClass('active');
+        break;
+        }
 
   }
   closeNotification() {

@@ -1,7 +1,7 @@
 {
     "name": "omnilog",
-    "productName": "OmniLog",
-    "version": "1.1.23",
+    "productName": "Soft Kitty",
+    "version": "1.2.0",
     "description": "Log reciever",
     "main": "electron.prod.js",
     "license": "MIT",
